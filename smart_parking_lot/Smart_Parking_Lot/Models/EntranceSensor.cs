@@ -1,12 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Smart_Parking_Lot.Models
+namespace SmartParkingSystem.Models
 {
-    internal class EntranceSensor
+    public class EntranceSensor
     {
+        public event Action CarDetected;
+        public bool IsCarDetected { get; private set; }
+
+        public void DetectCar()
+        {
+            IsCarDetected = true;
+            CarDetected?.Invoke();
+        }
+
+        public void ClearDetection()
+        {
+            IsCarDetected = false;
+        }
     }
 }
