@@ -15,5 +15,32 @@ namespace SmartParkingSystem.ViewModels
         public LightingController Lights { get; private set; } = new LightingController();
 
         private DispatcherTimer refreshTimer;
+
+        private string _gateStatus;
+        public string GateStatus
+        {
+            get => _gateStatus;
+            set { _gateStatus = value; OnPropertyChanged(); }
+        }
+
+        private string _lightingStatus;
+        public string LightingStatus
+        {
+            get => _lightingStatus;
+            set { _lightingStatus = value; OnPropertyChanged(); }
+        }
+
+        private string _slotInfo;
+        public string SlotInfo
+        {
+            get => _slotInfo;
+            set { _slotInfo = value; OnPropertyChanged(); }
+        }
+
+        public DashboardViewModel()
+        {
+            EntranceSensor.CarDetected += async () => await HandleCarDetected();
+            StartTimer();
+        }
     }
 }
