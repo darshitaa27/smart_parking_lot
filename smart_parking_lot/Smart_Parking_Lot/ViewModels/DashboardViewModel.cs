@@ -42,5 +42,35 @@ namespace SmartParkingSystem.ViewModels
             EntranceSensor.CarDetected += async () => await HandleCarDetected();
             StartTimer();
         }
+
+        private void StartTimer()
+        {
+            refreshTimer = new DispatcherTimer();
+            refreshTimer.Interval = TimeSpan.FromSeconds(2);
+            refreshTimer.Tick += (s, e) => RefreshDisplay();
+            refreshTimer.Start();
+        }
+
+        private async Task HandleCarDetected()
+        {
+            LogReport.WriteLog("Car detected at entrance.");
+            await Gate.OpenGateAsync();
+            LogReport.WriteLog("Gate cycle completed.");
+            SlotSensor.SimulateCarEntry();
+            EntranceSensor.ClearDetection();
+            RefreshDisplay();
+        }
+
+        private void RefreshDisplay()
+        {
+            GateStatus = Gate.Status;
+            Lights.AutoControl(DateTime.Now, SlotSensor.OccupiedSlots);
+            LightingStatus = Lights.IsLightOn ? "ON" : "OFF";
+            SlotInfo = $"Available Slots: {SlotSensor.FreeSlots}/{SlotSensor.TotalSlots}";
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        private void OnPropertyChanged([CallerMemberName] string name = "")
+            => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
     }
 }
